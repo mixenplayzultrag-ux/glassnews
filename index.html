@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Apple Glass News</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    background: linear-gradient(180deg, #0f172a 0%, #071129 70%);
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .app-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 30px;
+    background: rgba(255 255 255 / 0.07);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(100 116 255 / 0.3);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255 255 255 / 0.15);
+    display: flex;
+    flex-direction: column;
+    min-height: 80vh;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  header h1 {
+    font-weight: 600;
+    font-size: 28px;
+    letter-spacing: 1.1px;
+    margin: 0;
+  }
+  select {
+    background: rgba(255 255 255 / 0.25);
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    outline-offset: 2px;
+    transition: background-color 0.3s ease;
+  }
+  select:hover, select:focus {
+    background: rgba(255 255 255 / 0.45);
+  }
+  main {
+    flex: 1;
+    display: flex;
+    gap: 25px;
+    overflow: hidden;
+  }
+  .sidebar {
+    width: 300px;
+    background: rgba(255 255 255 / 0.07);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(100 116 255 / 0.15);
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar h2 {
+    margin-top: 0;
+    font-weight: 600;
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  .sources-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .sources-list button {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    color: #aab2ff;
+    padding: 8px 6px;
+    text-align: left;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+  }
+  .sources-list button:hover {
+    background: rgba(100 116 255 / 0.3);
+    color: #e0e7ff;
+  }
+  .content {
+    flex: 1;
+    background: rgba(255 255 255 / 0.07);
+    border-radius: 20px;
+    padding: 24px 32px;
+    box-shadow: 0 8px 32px rgba(100 116 255 / 0.3);
+    overflow-y: auto;
+  }
+  .headline-list {
+    max-height: 100%;
+    overflow-y: auto;
+  }
+  .headline {
+    padding: 14px 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+  }
+  .headline:hover {
+    background: rgba(100 116 255 / 0.25);
+  }
+  .headline-title {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+  .headline-meta {
+    font-size: 12px;
+    color: #bbbff0;
+  }
+  .article {
+    max-width: 850px;
+  }
+  .article-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .article-meta {
+    font-size: 14px;
+    color: #a0a9f5;
+    margin-bottom: 30px;
+  }
+  .article-content {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #dde0ff;
+  }
+  .back-button {
+    margin-bottom: 18px;
+    background: rgba(100 116 255 / 0.35);
+    border: none;
+    border-radius: 14px;
+    padding: 8px 14px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    width: fit-content;
+    transition: background-color 0.25s ease;
+  }
+  .back-button:hover {
+    background: rgba(100 116 255 / 0.55);
+  }
+  footer {
+    text-align: center;
+    font-size: 14px;
+    color: #666cffaa;
+    margin-top: 24px;
+  }
+  /* Scrollbar styling */
+  .headline-list::-webkit-scrollbar,
+  .sources-list::-webkit-scrollbar,
+  .content::-webkit-scrollbar {
+    width: 8px;
+  }
+  .headline-list::-webkit-scrollbar-thumb,
+  .sources-list::-webkit-scrollbar-thumb,
+  .content::-webkit-scrollbar-thumb {
+    background: rgba(100 116 255, 0.7);
+    border-radius: 4px;
+  }
+  .headline-list::-webkit-scrollbar-track,
+  .sources-list::-webkit-scrollbar-track,
+  .content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+</style>
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <h1>Apple Glass News</h1>
+      <select id="countrySelect" aria-label="Select country for news">
+        <option value="us">United States</option>
+        <option value="gb">United Kingdom</option>
+        <option value="jp">Japan</option>
+        <option value="de">Germany</option>
+        <option value="fr">France</option>
+      </select>
+    </header>
+    <main>
+      <aside class="sidebar" aria-label="News sources">
+        <h2>Sources</h2>
+        <div class="sources-list" id="sourcesList">
+          Loading sources...
+        </div>
+      </aside>
+      <section class="content" aria-live="polite" id="contentArea" tabindex="0">
+        <div class="headline-list" id="headlineList" role="list">
+          Loading headlines...
+        </div>
+      </section>
+    </main>
+    <footer>
+      Powered by free news APIs &mdash; Apple Glass style ✨
+    </footer>
+  </div>
+
+<script>
+  const countrySelect = document.getElementById('countrySelect');
+  const headlineList = document.getElementById('headlineList');
+  const sourcesList = document.getElementById('sourcesList');
+  const contentArea = document.getElementById('contentArea');
+
+  // State
+  let currentCountry = countrySelect.value;
+  let currentArticles = [];
+  let filteredSources = [];
+  let currentReading = null;
+
+  // Example free API using NewsAPI.org (demo only, limited usage)
+  // You can get your own API key from https://newsapi.org/
+  // We'll use a demo key here for example purposes.
+
+  // For no-key free alternatives, you might use NewsData.io, Mediastack, or a proxy for RSS feeds.
+
+  // But here, let's simulate API with static data to make it work fully offline:
+
+  const demoNewsData = {
+    us: [
+      {
+        title: "US Senate passes infrastructure bill",
+        source: "Reuters",
+        publishedAt: "2025-08-10",
+        description: "The US Senate approved a historic infrastructure bill aimed at improving roads, bridges, and broadband nationwide."
+      },
+      {
+        title: "New tech startups in Silicon Valley boom",
+        source: "TechCrunch",
+        publishedAt: "2025-08-09",
+        description: "Silicon Valley is experiencing a surge in new startups focused on AI, biotech, and clean energy."
+      },
+      {
+        title: "Major wildfire contained in California",
+        source: "CNN",
+        publishedAt: "2025-08-10",
+        description: "Firefighters have contained a major wildfire in Northern California after weeks of battling flames."
+      }
+    ],
+    gb: [
+      {
+        title: "London Mayor announces new green spaces",
+        source: "BBC",
+        publishedAt: "2025-08-09",
+        description: "The mayor of London revealed plans for expanding urban green areas to improve air quality and public health."
+      },
+      {
+        title: "UK tech firms see growth despite Brexit",
+        source: "The Guardian",
+        publishedAt: "2025-08-08",
+        description: "Despite Brexit challenges, technology firms across the UK report record growth in the past year."
+      },
+      {
+        title: "British Open golf tournament highlights",
+        source: "Sky Sports",
+        publishedAt: "2025-08-10",
+        description: "Spectacular moments and highlights from the recent British Open golf tournament."
+      }
+    ],
+    jp: [
+      {
+        title: "Tokyo Olympics stadium upgrades confirmed",
+        source: "NHK",
+        publishedAt: "2025-08-09",
+        description: "The Tokyo Olympic Committee announced upgrades to stadium facilities ahead of upcoming games."
+      },
+      {
+        title: "Japan launches new space probe",
+        source: "Asahi Shimbun",
+        publishedAt: "2025-08-08",
+        description: "Japan's space agency has successfully launched a probe to explore the asteroid belt."
+      },
+      {
+        title: "Cherry blossom tourism rebounds",
+        source: "Japan Times",
+        publishedAt: "2025-08-07",
+        description: "Tourism around cherry blossom season is returning to pre-pandemic levels, bringing economic hope."
+      }
+    ],
+    de: [
+      {
+        title: "Germany boosts renewable energy investment",
+        source: "DW",
+        publishedAt: "2025-08-10",
+        description: "Germany announces increased funding for renewable energy projects to meet climate goals."
+      },
+      {
+        title: "Berlin Film Festival announces winners",
+        source: "Der Spiegel",
+        publishedAt: "2025-08-09",
+        description: "Awards for outstanding films and performances were handed out at the Berlin Film Festival."
+      },
+      {
+        title: "Autobahn speed limit debate heats up",
+        source: "Frankfurter Allgemeine",
+        publishedAt: "2025-08-08",
+        description: "Discussions around imposing speed limits on Autobahns continue to stir public debate."
+      }
+    ],
+    fr: [
+      {
+        title: "Paris to host fashion week with new guidelines",
+        source: "Le Monde",
+        publishedAt: "2025-08-10",
+        description: "Paris Fashion Week will follow strict new sustainability guidelines to reduce environmental impact."
+      },
+      {
+        title: "French vineyards face climate challenges",
+        source: "France 24",
+        publishedAt: "2025-08-09",
+        description: "Winemakers in France are adapting to changing weather patterns affecting grape harvests."
+      },
+      {
+        title: "Historic monuments restored in Lyon",
+        source: "AFP",
+        publishedAt: "2025-08-07",
+        description: "Major restoration projects are underway to preserve Lyon's historic landmarks."
+      }
+    ]
+  };
+
+  // Load news for country (simulate async)
+  function loadNews(countryCode) {
+    headlineList.innerHTML = "Loading headlines...";
+    sourcesList.innerHTML = "Loading sources...";
+    currentReading = null;
+    contentArea.innerHTML = `<div class="headline-list" id="headlineList"></div>`;
+
+    // Simulate async fetch delay
+    return new Promise(resolve => {
+      setTimeout(() => {
+        const news = demoNewsData[countryCode] || [];
+        currentArticles = news;
+        filteredSources = [...new Set(news.map(a => a.source))].sort();
+
+        renderHeadlines();
+        renderSources();
+        resolve();
+      }, 500);
+    });
+  }
+
+  // Render headlines list
+  function renderHeadlines() {
+    if(currentArticles.length === 0){
+      headlineList.innerHTML = `<p>No news headlines available for this country today.</p>`;
+      return;
+    }
+    headlineList.innerHTML = '';
+    for(let i=0; i<currentArticles.length; i++){
+      const article = currentArticles[i];
+      const el = document.createElement('div');
+      el.className = 'headline';
+      el.tabIndex = 0;
+      el.setAttribute('role','listitem');
+      el.setAttribute('aria-label', `Headline: ${article.title} from ${article.source}, published on ${article.publishedAt}`);
+
+      el.innerHTML = `
+        <div class="headline-title">${article.title}</div>
+        <div class="headline-meta">${article.source} &middot; ${article.publishedAt}</div>
+      `;
+      el.onclick = () => showArticle(i);
+      el.onkeypress = e => {
+        if(e.key === 'Enter' || e.key === ' ') {
+          showArticle(i);
+          e.preventDefault();
+        }
+      };
+      headlineList.appendChild(el);
+    }
+  }
+
+  // Render sources list
+  function renderSources() {
+    if(filteredSources.length === 0){
+      sourcesList.innerHTML = `<p>No sources available.</p>`;
+      return;
+    }
+    sourcesList.innerHTML = '';
+    for(let i=0; i<filteredSources.length; i++){
+      const source = filteredSources[i];
+      const btn = document.createElement('button');
+      btn.textContent = source;
+      btn.onclick = () => filterBySource(source);
+      sourcesList.appendChild(btn);
+    }
+  }
+
+  // Filter headlines by source
+  function filterBySource(source) {
+    const filtered = demoNewsData[currentCountry].filter(a => a.source === source);
+    currentArticles = filtered;
+    renderHeadlines();
+  }
+
+  // Show full article reading pane
+  function showArticle(index) {
+    currentReading = currentArticles[index];
+    contentArea.innerHTML = `
+      <button class="back-button" aria-label="Back to headlines">&larr; Back</button>
+      <article class="article">
+        <h2 class="article-title">${currentReading.title}</h2>
+        <p class="article-meta">${currentReading.source} &middot; ${currentReading.publishedAt}</p>
+        <p class="article-content">${currentReading.description}</p>
+      </article>
+    `;
+
+    contentArea.querySelector('.back-button').onclick = () => {
+      currentReading = null;
+      renderHeadlines();
+    };
+
+    // Focus content area for accessibility
+    contentArea.focus();
+  }
+
+  // On country change
+  countrySelect.addEventListener('change', e => {
+    currentCountry = e.target.value;
+    loadNews(currentCountry);
+  });
+
+  // Initial load
+  loadNews(currentCountry);
+
+</script>
+</body>
+</html>
